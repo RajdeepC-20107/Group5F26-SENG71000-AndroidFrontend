@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,7 +41,19 @@ fun HomePage() {
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Driver Karma") }
+                title = { Text("Driver Karma") },
+                actions = {
+                    IconButton(
+                        onClick = {
+
+                        },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Favorite"
+                        )
+                    }
+                }
             )
         },
         bottomBar = {
@@ -57,7 +73,7 @@ fun HomePage() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Row() {
+                Row {
                     DriveScoreCircle(score)
                 }
             }
@@ -111,7 +127,7 @@ private fun RandomScoreButton(score: MutableIntState) {
 }
 
 private fun getWheelHue(int:Int): Float {
-    return 0f.coerceAtLeast(int.toFloat() * 0.4f / 100f * 360f - 30);
+    return 0f.coerceAtLeast(int.toFloat() * 0.4f / 100f * 360f - 30)
 }
 
 private fun getRandomScore(): Int {
