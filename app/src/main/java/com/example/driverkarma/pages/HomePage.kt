@@ -33,6 +33,7 @@ import kotlin.math.roundToInt
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun HomePage() {
+    // The score of the user's most recent driving session
     val score = remember {
         mutableIntStateOf(0)
     }
@@ -43,16 +44,7 @@ fun HomePage() {
             TopAppBar(
                 title = { Text("Driver Karma") },
                 actions = {
-                    IconButton(
-                        onClick = {
-
-                        },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "Favorite"
-                        )
-                    }
+                    ProfileButton()
                 }
             )
         },
@@ -126,10 +118,28 @@ private fun RandomScoreButton(score: MutableIntState) {
     }
 }
 
+@Composable
+private fun ProfileButton() {
+    IconButton(
+        onClick = {
+
+        },
+    ) {
+        Icon(
+            imageVector = Icons.Default.AccountCircle,
+            contentDescription = "Favorite"
+        )
+    }
+}
+
+/*
+* Gets the colour that the driver score circle becomes
+*/
 private fun getWheelHue(int:Int): Float {
     return 0f.coerceAtLeast(int.toFloat() * 0.4f / 100f * 360f - 30)
 }
 
+// This function is getting removed in due time, most likely
 private fun getRandomScore(): Int {
     return (Math.random() * 101).roundToInt()
 }
