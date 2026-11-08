@@ -4,13 +4,13 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -59,16 +59,21 @@ fun ScoreScreen(data: DrivingScore = sampleScore) {
             Text("Events", style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.fillMaxWidth())
         }
-        items(data.factors) { f ->
-            Card(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
-                Column(Modifier.padding(12.dp)) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(f.name, fontWeight = FontWeight.Bold)
-                        Text(if (f.impact == 0) "—" else "${f.impact}")
-                    }
-                    Text(f.note, style = MaterialTheme.typography.bodyMedium)
-                }
+        items(data.factors) { factor ->
+            FactorCard(factor = factor)
+        }
+    }
+}
+
+@Composable
+private fun FactorCard(factor: ScoreFactor) {
+    Card(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+        Column(Modifier.padding(12.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(factor.name, fontWeight = FontWeight.Bold)
+                Text(if (factor.impact == 0) "—" else "${factor.impact}")
             }
+            Text(factor.note, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
@@ -91,7 +96,7 @@ fun ScoreRing(score: Int) {
         Canvas(Modifier.fillMaxSize()) {
             val stroke = Stroke(width = 18.dp.toPx(), cap = StrokeCap.Round)
             drawArc(Color.LightGray, 0f, 360f, false, style = stroke)
-            drawArc(color, -90f, 360f * score / 100f, false, style = stroke)
+            drawArc(color, -90f, (360f * score) / 100f, false, style = stroke)
         }
         Text("$score", fontSize = 52.sp, fontWeight = FontWeight.Bold)
     }
