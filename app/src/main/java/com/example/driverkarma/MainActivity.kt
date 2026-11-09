@@ -3,45 +3,28 @@ package com.example.driverkarma
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.driverkarma.ui.theme.DriverKarmaTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.driverkarma.ui.login.LoginScreen
+import com.example.driverkarma.ui.score.ScoreScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            DriverKarmaTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            MaterialTheme {
+                val nav = rememberNavController()
+                NavHost(nav, startDestination = "login") {
+                    composable("login") {
+                        LoginScreen(onLoggedIn = {
+                            nav.navigate("score") { popUpTo("login") { inclusive = true } }
+                        })
+                    }
+                    composable("score") { ScoreScreen() }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DriverKarmaTheme {
-        Greeting("Android")
     }
 }
