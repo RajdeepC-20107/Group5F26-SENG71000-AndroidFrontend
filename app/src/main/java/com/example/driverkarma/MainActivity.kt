@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -15,16 +16,31 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                val nav = rememberNavController()
-                NavHost(nav, startDestination = "login") {
-                    composable("login") {
-                        LoginScreen(onLoggedIn = {
-                            nav.navigate("score") { popUpTo("login") { inclusive = true } }
-                        })
-                    }
-                    composable("score") { ScoreScreen() }
-                }
+                AppNavController()
             }
+        }
+    }
+}
+
+@Composable
+private fun AppNavController() {
+    val nav = rememberNavController()
+    NavHost(
+        nav,
+        startDestination = "login"
+    ) {
+        composable("login") {
+            LoginScreen(onLoggedIn = {
+                nav.navigate("score") {
+                    popUpTo("login") {
+                        inclusive = true
+                    }
+                }
+            })
+        }
+
+        composable("score") {
+            ScoreScreen()
         }
     }
 }

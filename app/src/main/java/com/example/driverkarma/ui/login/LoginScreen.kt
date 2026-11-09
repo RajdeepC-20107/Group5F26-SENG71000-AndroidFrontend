@@ -26,7 +26,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 // LoginScreen.kt
 @Composable
-fun LoginScreen(onLoggedIn: () -> Unit, vm: LoginViewModel = viewModel()) {
+fun LoginScreen(
+    onLoggedIn: () -> Unit,
+    vm: LoginViewModel = viewModel()
+) {
     val state by vm.state.collectAsState()
 
     Column(
@@ -36,7 +39,10 @@ fun LoginScreen(onLoggedIn: () -> Unit, vm: LoginViewModel = viewModel()) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Sign In", style = MaterialTheme.typography.headlineLarge)
+        Text(
+            "Sign In",
+            style = MaterialTheme.typography.headlineLarge
+        )
         Spacer(Modifier.height(24.dp))
 
         UsernameField(
@@ -89,7 +95,9 @@ private fun PasswordField(
         label = { Text("Password") },
         singleLine = true,
         visualTransformation = PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password
+        ),
         modifier = Modifier.fillMaxWidth()
     )
 }
