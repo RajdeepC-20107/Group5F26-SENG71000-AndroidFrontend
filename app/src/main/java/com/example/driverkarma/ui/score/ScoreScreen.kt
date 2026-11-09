@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.driverkarma.data.DrivingScore
 import com.example.driverkarma.data.ScoreFactor
+import com.example.driverkarma.functions.getScoreHue
 
 // ScoreScreen.kt
 val sampleScore = DrivingScore( //sample score stub
@@ -117,11 +118,11 @@ private fun Stat(label: String, value: String) =
 
 @Composable
 fun ScoreRing(score: Int) {
-    val color = when {
-        score >= 80 -> Color(0xFF2E7D32)
-        score >= 60 -> Color(0xFFF9A825)
-        else -> Color(0xFFC62828)
-    }
+    val color = Color.hsv(
+        getScoreHue(score),
+        1F,
+        1F
+    )
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.size(180.dp)
