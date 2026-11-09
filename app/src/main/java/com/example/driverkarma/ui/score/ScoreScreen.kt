@@ -53,17 +53,17 @@ val sampleScore = DrivingScore( //sample score stub
 )
 
 @Composable
-fun ScoreScreen(data: DrivingScore = sampleScore) {
+fun ScoreScreen(score: DrivingScore = sampleScore) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         contentPadding = PaddingValues(top = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
-            ScoreRing(data.score)
+            ScoreRing(score.score)
             Spacer(Modifier.height(8.dp))
             Text(
-                data.date,
+                score.date,
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(Modifier.height(16.dp))
@@ -71,8 +71,8 @@ fun ScoreScreen(data: DrivingScore = sampleScore) {
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Stat("Distance", "${data.distanceKm} km")
-                Stat("Duration", "${data.durationMin} min")
+                Stat("Distance", "${score.distanceKm} km")
+                Stat("Duration", "${score.durationMin} min")
             }
             Spacer(Modifier.height(24.dp))
             Text(
@@ -81,7 +81,7 @@ fun ScoreScreen(data: DrivingScore = sampleScore) {
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        items(data.factors) { factor ->
+        items(score.factors) { factor ->
             FactorCard(factor = factor)
         }
     }
@@ -128,7 +128,10 @@ fun ScoreRing(score: Int) {
         modifier = Modifier.size(180.dp)
     ) {
         Canvas(Modifier.fillMaxSize()) {
-            val stroke = Stroke(width = 18.dp.toPx(), cap = StrokeCap.Round)
+            val stroke = Stroke(
+                width = 18.dp.toPx(),
+                cap = StrokeCap.Round
+            )
             drawArc(
                 Color.LightGray,
                 0f,

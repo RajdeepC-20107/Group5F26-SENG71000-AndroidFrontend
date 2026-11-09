@@ -5,9 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.driverkarma.data.DrivingScore
 import com.example.driverkarma.ui.home.HomeScreen
 import com.example.driverkarma.ui.login.LoginScreen
 import com.example.driverkarma.ui.score.ScoreScreen
@@ -46,8 +49,23 @@ private fun AppNavController() {
             )
         }
 
-        composable("score") {
-            ScoreScreen()
+        composable(
+            "score/{score}",
+            arguments = listOf(
+                navArgument("score") {
+                    type = NavType.IntType
+                }
+            )
+        ) { params ->
+            ScoreScreen(
+                DrivingScore(
+                    score = params.arguments?.getInt("score") ?: 0,
+                    date = "",
+                    distanceKm = 0.0,
+                    durationMin = 0,
+                    factors = listOf()
+                )
+            )
         }
     }
 }
