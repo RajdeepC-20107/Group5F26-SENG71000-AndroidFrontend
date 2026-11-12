@@ -14,14 +14,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +43,9 @@ fun HomeScreen(navController: NavController) {
     // The score of the user's most recent driving session
     val score = remember {
         mutableIntStateOf(0)
+    }
+    val isDriving = remember {
+        mutableStateOf(false)
     }
 
     Scaffold(
@@ -58,7 +65,7 @@ fun HomeScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    RandomScoreButton(score)
+                    StartAndEndDrivingButton(score, isDriving)
                 }
             }
         },
@@ -116,13 +123,25 @@ private fun MutableScoreRing(score: MutableIntState) {
 }
 
 @Composable
-private fun RandomScoreButton(score: MutableIntState) {
+private fun StartAndEndDrivingButton(score: MutableIntState, isDriving: MutableState<Boolean>) {
     Button(
         onClick = {
-            score.intValue = getRandomScore()
-        }
+            isDriving.value = !isDriving.value
+            if(!isDriving.value) {
+                score.intValue = getRandomScore()
+            }
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor =
+                if (!isDriving.value) MaterialTheme.colorScheme.primary
+                else Color.Red
+        )
     ) {
-        Text(text = "Get a score!")
+        Text(
+            text =
+                if (!isDriving.value) "Start Driving Session"
+                else "End Driving Session"
+        )
     }
 }
 
