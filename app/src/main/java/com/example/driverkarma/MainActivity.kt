@@ -58,6 +58,7 @@ private fun AppNavController() {
             )
         ) { params ->
             ScoreScreen(
+                nav,
                 DrivingScore(
                     score = params.arguments?.getInt("score") ?: 0,
                     date = "",

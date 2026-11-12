@@ -72,7 +72,7 @@ fun HomeScreen(navController: NavController) {
                 MutableScoreRing(score)
             }
             Row {
-                viewScoringButton(score, navController)
+                ViewScoringButton(score, navController)
             }
         }},
     )
@@ -127,7 +127,7 @@ private fun RandomScoreButton(score: MutableIntState) {
 }
 
 @Composable
-private fun viewScoringButton(
+private fun ViewScoringButton(
     score: MutableIntState,
     navController: NavController
 ) {
@@ -149,7 +149,7 @@ private fun ProfileButton() {
     ) {
         Icon(
             imageVector = Icons.Default.AccountCircle,
-            contentDescription = "Favorite"
+            contentDescription = "Profile"
         )
     }
 }

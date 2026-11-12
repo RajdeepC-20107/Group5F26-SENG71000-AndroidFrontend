@@ -14,9 +14,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +33,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.driverkarma.data.DrivingScore
 import com.example.driverkarma.data.ScoreFactor
 import com.example.driverkarma.functions.getScoreHue
@@ -53,38 +61,58 @@ val sampleScore = DrivingScore( //sample score stub
 )
 
 @Composable
-fun ScoreScreen(score: DrivingScore = sampleScore) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        contentPadding = PaddingValues(top = 48.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        item {
-            ScoreRing(score.score)
-            Spacer(Modifier.height(8.dp))
-            Text(
-                score.date,
-                style = MaterialTheme.typography.bodyMedium
+@OptIn(ExperimentalMaterial3Api::class)
+fun ScoreScreen(navController: NavController, score: DrivingScore = sampleScore) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    BackButton(navController)
+                }
             )
-            Spacer(Modifier.height(16.dp))
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+        },
+        content = {
+                paddingValues -> Column(
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                contentPadding = PaddingValues(top = 48.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Stat("Distance", "${score.distanceKm} km")
-                Stat("Duration", "${score.durationMin} min")
+                item {
+                    ScoreRing(score.score)
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        score.date,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Stat("Distance", "${score.distanceKm} km")
+                        Stat("Duration", "${score.durationMin} min")
+                    }
+                    Spacer(Modifier.height(24.dp))
+                    Text(
+                        "Events",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                items(score.factors) { factor ->
+                    FactorCard(factor = factor)
+                }
             }
-            Spacer(Modifier.height(24.dp))
-            Text(
-                "Events",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        items(score.factors) { factor ->
-            FactorCard(factor = factor)
-        }
-    }
+        }},
+    )
+
+
 }
 
 @Composable
@@ -141,7 +169,7 @@ fun ScoreRing(score: Int) {
             )
             drawArc(color,
                 -90f,
-                (360f * score) / 100f,
+                -(360f * score) / 100f,
                 false,
                 style = stroke
             )
@@ -150,6 +178,22 @@ fun ScoreRing(score: Int) {
             "$score",
             fontSize = 52.sp,
             fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+private fun BackButton(navController: NavController) {
+    IconButton(
+        onClick = {
+
+            println("received")
+            navController.popBackStack()
+        },
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.ArrowBackIosNew,
+            contentDescription = "Back"
         )
     }
 }
