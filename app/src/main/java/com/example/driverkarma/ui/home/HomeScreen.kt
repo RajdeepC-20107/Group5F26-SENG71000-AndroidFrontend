@@ -1,5 +1,12 @@
 package com.example.driverkarma.ui.home
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +39,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.driverkarma.functions.getScoreHue
 import kotlin.math.roundToInt
@@ -44,8 +53,31 @@ fun HomeScreen(navController: NavController) {
     val score = remember {
         mutableIntStateOf(0)
     }
+
+    // Whether the drive is being tracked or not
     val isDriving = remember {
         mutableStateOf(false)
+    }
+
+    val context = LocalContext.current
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+
+        val fineLocationGranted =
+            permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+
+        if (fineLocationGranted) {
+            // Permission granted: start the driving session
+            isDriving.value = true
+        } else {
+            Toast.makeText(
+                context,
+                "Precise location permission is required.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
     Scaffold(
@@ -65,7 +97,13 @@ fun HomeScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    StartAndEndDrivingButton(score, isDriving)
+                    StartAndEndDrivingButton(score, isDriving) {
+                        startDriving(
+                            context,
+                            isDriving,
+                            locationPermissionLauncher
+                        )
+                    }
                 }
             }
         },
@@ -123,11 +161,17 @@ private fun MutableScoreRing(score: MutableIntState) {
 }
 
 @Composable
-private fun StartAndEndDrivingButton(score: MutableIntState, isDriving: MutableState<Boolean>) {
+private fun StartAndEndDrivingButton(
+    score: MutableIntState,
+    isDriving: MutableState<Boolean>,
+    onStartDriving: () -> Unit
+) {
     Button(
         onClick = {
-            isDriving.value = !isDriving.value
-            if(!isDriving.value) {
+            if (!isDriving.value) {
+                onStartDriving()
+            } else {
+                isDriving.value = false
                 score.intValue = getRandomScore()
             }
         },
@@ -185,4 +229,34 @@ private fun goToScoreScreen(
     navController.navigate(
         "score/$score"
     )
+}
+
+/**
+ * Checks for required permissions and starts a driving session if permissions are granted.
+ *
+ * @param context   The context instance
+ * @param isDriving     Whether the user is driving or not
+ * @param locationPermissionLauncher    The way that location permissions are gotten
+ */
+private fun startDriving(
+    context: Context,
+    isDriving: MutableState<Boolean>,
+    locationPermissionLauncher: ActivityResultLauncher<Array<String>>
+) {
+    val fineLocationGranted =
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+    if (fineLocationGranted) {
+        isDriving.value = true
+    } else {
+        locationPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
 }
