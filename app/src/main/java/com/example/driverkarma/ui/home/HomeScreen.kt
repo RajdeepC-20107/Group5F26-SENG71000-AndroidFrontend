@@ -43,7 +43,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.example.driverkarma.classes.GpxFileManager
+import com.example.driverkarma.classes.LocationTracker
 import com.example.driverkarma.functions.getScoreHue
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
@@ -60,6 +65,16 @@ fun HomeScreen(navController: NavController) {
     }
 
     val context = LocalContext.current
+
+    val locationTracker = remember {
+        LocationTracker(context)
+    }
+
+    val gpxFileManager = remember {
+        GpxFileManager()
+    }
+
+    val coroutineScope = rememberCoroutineScope()
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -97,19 +112,34 @@ fun HomeScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    StartAndEndDrivingButton(score, isDriving) {
-                        startDriving(
-                            context,
-                            isDriving,
-                            locationPermissionLauncher
-                        )
-                    }
+                    StartAndEndDrivingButton(
+                        isDriving,
+                        onStartDriving = {
+                            startDriving(
+                                context,
+                                isDriving,
+                                locationPermissionLauncher,
+                                locationTracker
+                            )
+                        },
+                        onEndDriving = {
+                            endDriving(
+                                score,
+                                isDriving,
+                                locationTracker,
+                                gpxFileManager,
+                                coroutineScope,
+                                context
+                            )
+                        }
+                    )
                 }
             }
         },
-        content = {
-                paddingValues -> Column(
-            modifier = Modifier.fillMaxSize().padding(paddingValues),
+        content = { paddingValues -> Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -162,17 +192,16 @@ private fun MutableScoreRing(score: MutableIntState) {
 
 @Composable
 private fun StartAndEndDrivingButton(
-    score: MutableIntState,
     isDriving: MutableState<Boolean>,
-    onStartDriving: () -> Unit
+    onStartDriving: () -> Unit,
+    onEndDriving: () -> Unit
 ) {
     Button(
         onClick = {
             if (!isDriving.value) {
                 onStartDriving()
             } else {
-                isDriving.value = false
-                score.intValue = getRandomScore()
+                onEndDriving()
             }
         },
         colors = ButtonDefaults.buttonColors(
@@ -241,7 +270,8 @@ private fun goToScoreScreen(
 private fun startDriving(
     context: Context,
     isDriving: MutableState<Boolean>,
-    locationPermissionLauncher: ActivityResultLauncher<Array<String>>
+    locationPermissionLauncher: ActivityResultLauncher<Array<String>>,
+    locationTracker: LocationTracker
 ) {
     val fineLocationGranted =
         ContextCompat.checkSelfPermission(
@@ -250,6 +280,7 @@ private fun startDriving(
         ) == PackageManager.PERMISSION_GRANTED
 
     if (fineLocationGranted) {
+        locationTracker.startTracking()
         isDriving.value = true
     } else {
         locationPermissionLauncher.launch(
@@ -258,5 +289,40 @@ private fun startDriving(
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
         )
+    }
+}
+
+private fun endDriving(
+    score: MutableIntState,
+    isDriving: MutableState<Boolean>,
+    locationTracker: LocationTracker,
+    gpxFileManager: GpxFileManager,
+    coroutineScope: CoroutineScope,
+    context: Context
+) {
+    locationTracker.stopTracking()
+    isDriving.value = false
+    score.intValue = getRandomScore()
+
+    coroutineScope.launch {
+        val locations = locationTracker.getLocations()
+
+        if (locations.isNotEmpty()) {
+            val gpxFile = gpxFileManager.createGpxFile(
+                context,
+                locations
+            )
+
+            Toast.makeText(context,
+                "GPX file created: ${gpxFile.absolutePath}",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        else {
+            Toast.makeText(context,
+                "No location data was successfully tracked.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 }
