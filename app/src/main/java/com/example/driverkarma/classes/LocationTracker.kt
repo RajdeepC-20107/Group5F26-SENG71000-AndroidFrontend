@@ -11,15 +11,33 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 
+/**
+ * Class that manages the starting, ending, and polling of location data.
+ * @author  Rajdeep Chowdhury
+ */
 class LocationTracker(context: Context) {
 
+    /**
+     * Fused Location Provider client
+     */
     private val fusedLocationClient =
         LocationServices.getFusedLocationProviderClient(context)
 
+    /**
+     * List that stores the location data polled over time.
+     */
     private val locations = mutableListOf<Location>()
 
+    /**
+     * Callback for Fused Location Provider client
+     */
     private var locationCallback: LocationCallback? = null
 
+    /**
+     * Begins the polling of location data, so as long as the required permissions are granted.
+     *
+     * @author  Rajdeep Chowdhury
+     */
     @RequiresPermission(
         allOf = [
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -61,6 +79,11 @@ class LocationTracker(context: Context) {
         )
     }
 
+    /**
+     * Stops the tracking and polling of location data.
+     *
+     * @author  Rajdeep Chowdhury
+     */
     fun stopTracking() {
         locationCallback?.let {
             fusedLocationClient.removeLocationUpdates(it)
@@ -69,6 +92,11 @@ class LocationTracker(context: Context) {
         locationCallback = null
     }
 
+    /**
+     * Returns the location points of the latest session.
+     *
+     * @author  Rajdeep Chowdhury
+     */
     fun getLocations(): List<Location> {
         synchronized(locations) {
             return locations.toList()

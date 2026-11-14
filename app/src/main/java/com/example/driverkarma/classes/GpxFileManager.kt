@@ -14,8 +14,21 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
+/**
+ * Class that manages the creation of .gpx files
+ * @author  Rajdeep Chowdhury
+ */
 class GpxFileManager {
 
+    /**
+     * Creates a .gpx file using a list of locations.
+     *
+     * @param context   The current Compose environment
+     * @param locations The list of locations polled from Fused Location Provider
+     * @return A .gpx file that has been produced.
+     *
+     * @author  Rajdeep Chowdhury
+     */
     suspend fun createGpxFile(
         context: Context,
         locations: List<Location>
@@ -29,18 +42,16 @@ class GpxFileManager {
 
         directory.mkdirs()
 
-        val filename =
-            "driving_session_" +
-                    SimpleDateFormat(
-                        "yyyyMMdd_HHmmss",
-                        Locale.US
-                    ).format(Date()) +
-                    ".gpx"
+        val filename = "driving_session_" + SimpleDateFormat(
+            "yyyyMMdd_HHmmss",
+            Locale.US
+        ).format(Date()) + ".gpx"
 
         val file = File(directory, filename)
 
         val serializer: XmlSerializer = Xml.newSerializer()
 
+        //.gpx File Output via XML Serializer
         file.outputStream().buffered().use { output ->
 
             serializer.setOutput(output, "UTF-8")
@@ -58,21 +69,21 @@ class GpxFileManager {
 
             val namespace = "http://www.topografix.com/GPX/1/1"
 
-            serializer.startTag(namespace, "gpx")
+            serializer.startTag(namespace, "gpx") //gpx start
             serializer.attribute(null, "version", "1.1")
             serializer.attribute(null, "creator", "Driver Karma")
 
-            serializer.startTag(namespace, "trk")
+            serializer.startTag(namespace, "trk") //trk start
 
             serializer.startTag(namespace, "name")
             serializer.text("Driving Session")
             serializer.endTag(namespace, "name")
 
-            serializer.startTag(namespace, "trkseg")
+            serializer.startTag(namespace, "trkseg") //trkseg start
 
             locations.forEach { location ->
 
-                serializer.startTag(namespace, "trkpt")
+                serializer.startTag(namespace, "trkpt") //trkpt start
 
                 serializer.attribute(
                     null,
@@ -104,20 +115,20 @@ class GpxFileManager {
                 serializer.endTag(namespace, "time")
 
 
-                serializer.startTag(namespace, "extensions")
+                serializer.startTag(namespace, "extensions") //extensions start
                 if(location.hasSpeed()) {
                     serializer.startTag(namespace, "speed")
                     serializer.text(mpsToKmh(location.speed).toString())
                     serializer.endTag(namespace, "speed")
                 }
-                serializer.endTag(namespace, "extensions")
+                serializer.endTag(namespace, "extensions") //extensions end
 
-                serializer.endTag(namespace, "trkpt")
+                serializer.endTag(namespace, "trkpt") //trkpt end
             }
 
-            serializer.endTag(namespace, "trkseg")
-            serializer.endTag(namespace, "trk")
-            serializer.endTag(namespace, "gpx")
+            serializer.endTag(namespace, "trkseg") //trkseg end
+            serializer.endTag(namespace, "trk") //trk end
+            serializer.endTag(namespace, "gpx") //gpx end
 
             serializer.endDocument()
         }

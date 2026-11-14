@@ -51,42 +51,51 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+/**
+ * The app's home screen.
+ *
+ * @param navController The navigation controller used to navigate to other screens.
+ *
+ * @author  Rajdeep Chowdhury
+ */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun HomeScreen(navController: NavController) {
-    // The score of the user's most recent driving session
+    //The score of the user's most recent driving session
     val score = remember {
         mutableIntStateOf(0)
     }
 
-    // Whether the drive is being tracked or not
+    //Whether the drive is being tracked or not
     val isDriving = remember {
         mutableStateOf(false)
     }
 
+    //The current local Compose application context
     val context = LocalContext.current
 
+    //The location tracker object instance used for location tracking
     val locationTracker = remember {
         LocationTracker(context)
     }
 
+    //The gpx file manager object instance used to create .gpx files
     val gpxFileManager = remember {
         GpxFileManager()
     }
 
+    //Coroutine that is launched upon ending a drive session
     val coroutineScope = rememberCoroutineScope()
 
+    //The permission launcher that asks for precise location permission
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
 
         val fineLocationGranted =
-            permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+            (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true)
 
-        if (fineLocationGranted) {
-            // Permission granted: start the driving session
-            isDriving.value = true
-        } else {
+        if (!fineLocationGranted) {
             Toast.makeText(
                 context,
                 "Precise location permission is required.",
@@ -95,6 +104,7 @@ fun HomeScreen(navController: NavController) {
         }
     }
 
+    //The scaffold which the visual application lives on.
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -153,6 +163,13 @@ fun HomeScreen(navController: NavController) {
     )
 }
 
+/**
+ * The score ring displayed big and centered on the home screen.
+ *
+ * @param score The score to be displayed
+ *
+ * @author  Rajdeep Chowdhury
+ */
 @Composable
 private fun MutableScoreRing(score: MutableIntState) {
     Box(
@@ -190,6 +207,15 @@ private fun MutableScoreRing(score: MutableIntState) {
     }
 }
 
+/**
+ * The button used to start and end driving sessions.
+ *
+ * @param isDriving Whether the phone is reportedly driving or not
+ * @param onStartDriving    The function that must run upon pressing the button to start driving.
+ * @param onEndDriving      The function that must run upon pressing the button to end driving.
+ *
+ * @author  Rajdeep Chowdhury
+ */
 @Composable
 private fun StartAndEndDrivingButton(
     isDriving: MutableState<Boolean>,
@@ -218,6 +244,14 @@ private fun StartAndEndDrivingButton(
     }
 }
 
+/**
+ * The button used to navigate to the score screen.
+ *
+ * @param score The score most recently achieved by the user and is being displayed
+ * @param navController The navigation controller used to switch between screens
+ *
+ * @author  Rajdeep Chowdhury
+ */
 @Composable
 private fun ViewScoringButton(
     score: MutableIntState,
@@ -232,6 +266,12 @@ private fun ViewScoringButton(
     }
 }
 
+/**
+ * TODO: This is not actually implemented yet, and may not get implemented.
+ * The profile icon button used to go to the profile section.
+ *
+ * @author  Rajdeep Chowdhury
+ */
 @Composable
 private fun ProfileButton() {
     IconButton(
@@ -251,6 +291,15 @@ private fun getRandomScore(): Int {
     return (Math.random() * 101).roundToInt()
 }
 
+/**
+ * TODO: This still need to make a call to the backend.
+ * The function used to navigate to the score screen.
+ *
+ * @param score The most recent score achieved by the user.
+ * @param navController The navigation controller used to navigate through the app.
+ *
+ * @author  Rajdeep Chowdhury
+ */
 private fun goToScoreScreen(
     score: Int,
     navController: NavController
@@ -264,8 +313,11 @@ private fun goToScoreScreen(
  * Checks for required permissions and starts a driving session if permissions are granted.
  *
  * @param context   The context instance
- * @param isDriving     Whether the user is driving or not
+ * @param isDriving Whether the user is driving or not
  * @param locationPermissionLauncher    The way that location permissions are gotten
+ * @param locationTracker   The location tracker object being used to track location
+ *
+ * @author  Rajdeep Chowdhury
  */
 private fun startDriving(
     context: Context,
@@ -292,6 +344,18 @@ private fun startDriving(
     }
 }
 
+/**
+ * Ends a driving session, assuming one was initially started.
+ *
+ * @param score The score that is being display on the home page
+ * @param isDriving Whether the vehicle is driving or not
+ * @param locationTracker   The location tracker object being used to track location
+ * @param gpxFileManager    The gpx file manager object being used to write .gpx files
+ * @param coroutineScope    The coroutine that will be launched upon the drive ending
+ * @param context   The current Compose application context
+ *
+ * @author  Rajdeep Chowdhury
+ */
 private fun endDriving(
     score: MutableIntState,
     isDriving: MutableState<Boolean>,
