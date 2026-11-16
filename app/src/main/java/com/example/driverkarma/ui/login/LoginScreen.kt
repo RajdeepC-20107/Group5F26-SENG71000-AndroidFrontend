@@ -24,7 +24,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-// LoginScreen.kt
+
+/**
+ * The app's login screen.
+ *
+ * @param onLoggedIn    The function that runs when a user attempts to log in
+ * @param vm    The view model that the login screen uses
+ *
+ * @author  Sifan Terefe
+ */
 @Composable
 fun LoginScreen(
     onLoggedIn: () -> Unit,
@@ -70,6 +78,14 @@ fun LoginScreen(
     }
 }
 
+/**
+ * The username field of the login page.
+ *
+ * @param value The string storing the username
+ * @param onValueChange Function to change the string value upon user input
+ *
+ * @author  Sifan Terefe
+ */
 @Composable
 private fun UsernameField(
     value: String,
@@ -84,6 +100,14 @@ private fun UsernameField(
     )
 }
 
+/**
+ * The password field of the login page.
+ *
+ * @param value The string storing the password
+ * @param onValueChange Function to change the string value upon user input
+ *
+ * @author  Sifan Terefe
+ */
 @Composable
 private fun PasswordField(
     value: String,
@@ -102,6 +126,13 @@ private fun PasswordField(
     )
 }
 
+/**
+ * An error message that appears upon a failed login.
+ *
+ * @param message   The message that is displayed to the user
+ *
+ * @author  Sifan Terefe
+ */
 @Composable
 private fun ErrorMessage(message: String) {
     Text(
@@ -110,6 +141,14 @@ private fun ErrorMessage(message: String) {
     )
 }
 
+/**
+ * The sign-in button of the login page.
+ *
+ * @param isLoading Whether the login or app is loading data or not
+ * @param onClick   The behaviour upon clicking the button
+ *
+ * @author  Sifan Terefe
+ */
 @Composable
 private fun SignInButton(
     isLoading: Boolean,
