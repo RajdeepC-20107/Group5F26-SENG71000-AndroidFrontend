@@ -16,7 +16,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.DriverKarma">https://github.com/RajdeepC-20107/Group5F26-SENG71000-AndroidFrontend/pulls
+        android:theme="@style/Theme.DriverKarma">
         <activity
             android:name=".MainActivity"
             android:exported="true"
