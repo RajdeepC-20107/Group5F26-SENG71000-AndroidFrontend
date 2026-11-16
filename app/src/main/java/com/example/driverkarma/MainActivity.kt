@@ -109,6 +109,9 @@ private fun AppNavController() {
  * Needed so the app can reach the dev backend.
  *
  * @param mainActivity  The main activity component running the app.
+ *
+ * @author  Farah Lariani
+ * @author  Rajdeep Chowdhury
  */
 private fun getLocalNetworkPermission(mainActivity: MainActivity) {
     if (Build.VERSION.SDK_INT >= 37 &&
