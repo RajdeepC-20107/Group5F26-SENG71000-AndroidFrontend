@@ -38,31 +38,21 @@ import com.example.driverkarma.data.DrivingScore
 import com.example.driverkarma.data.ScoreFactor
 import com.example.driverkarma.functions.getScoreHue
 
-// ScoreScreen.kt
-val sampleScore = DrivingScore( //sample score stub
-    score = 87, date = "Nov 5, 2026", distanceKm = 23.4, durationMin = 31,
-    factors = listOf(
-        ScoreFactor(
-            "Speed Limit",
-            "Two instances of driving over speed limit",
-            -6.0
-        ),
-        ScoreFactor(
-            "Braking Events",
-            "One harsh braking event detected.",
-            -4.0
-        ),
-        ScoreFactor(
-            "Weather",
-            "Dry conditions",
-            0.0
-        )
-    )
-)
-
+/**
+ * The screen used to display a score and its associated data
+ *
+ * @param navController The navigation controller used to navigate through the app
+ * @param score The driving score that is being displayed
+ *
+ * @author  Sifan Terefe
+ * @author  Rajdeep Chowdhury
+ */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun ScoreScreen(navController: NavController, score: DrivingScore = sampleScore) {
+fun ScoreScreen(
+    navController: NavController,
+    score: DrivingScore
+) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -111,10 +101,15 @@ fun ScoreScreen(navController: NavController, score: DrivingScore = sampleScore)
             }
         }},
     )
-
-
 }
 
+/**
+ * Displays a contributing factor to the driver score going down.
+ *
+ * @param factor    Represents a factor that caused score to go down.
+ *
+ * @author  Sifan Terefe
+ */
 @Composable
 private fun FactorCard(factor: ScoreFactor) {
     Card(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
@@ -131,19 +126,37 @@ private fun FactorCard(factor: ScoreFactor) {
     }
 }
 
+/**
+ * Formatted text used for representing a statistic.
+ * Currently used to show distance travelled and drive duration.
+ *
+ * @param label The name of the statistic
+ * @param value The value of the statistic
+ *
+ * @author  Sifan Terefe
+ */
 @Composable
-private fun Stat(label: String, value: String) =
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            value,
-            style = MaterialTheme.typography.titleLarge
-        )
-        Text(
-            label,
-            style = MaterialTheme.typography.bodySmall
-        )
-    }
+private fun Stat(label: String, value: String) = Column(
+    horizontalAlignment = Alignment.CenterHorizontally
+) {
+    Text(
+        value,
+        style = MaterialTheme.typography.titleLarge
+    )
+    Text(
+        label,
+        style = MaterialTheme.typography.bodySmall
+    )
+}
 
+/**
+ * The coloured ring that visualizes the score.
+ *
+ * @param score The score the user got.
+ *
+ * @author  Sifan Terefe
+ * @author  Rajdeep Chowdhury
+ */
 @Composable
 fun ScoreRing(score: Int) {
     val color = Color.hsv(
@@ -182,12 +195,17 @@ fun ScoreRing(score: Int) {
     }
 }
 
+/**
+ * The back button to return to the home screen.
+ *
+ * @param navController The navigation controller used to navigate through the app.
+ *
+ * @author  Rajdeep Chowdhury
+ */
 @Composable
 private fun BackButton(navController: NavController) {
     IconButton(
         onClick = {
-
-            println("received")
             navController.popBackStack()
         },
     ) {
