@@ -1,23 +1,23 @@
 package com.example.driverkarma.network
 
-import com.google.gson.annotations.SerializedName
+import com.example.driverkarma.network.login.LoginRequest
+import com.example.driverkarma.network.login.LoginResponse
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-/* Request and response bodies, matching the FastAPI backend */
-data class LoginRequest(
-    val identifier: String,
-    val password: String
-)
-
-data class LoginResponse(
-    @SerializedName("user_id") val userId: Int,
-    @SerializedName("full_name") val fullName: String,
-    @SerializedName("profile_score") val profileScore: Int?
-)
-
-/* Every backend endpoint the app calls */
+/**
+ * Every FastAPI backend endpoint the app calls.
+ *
+ * @author  Farah Lariani
+ */
 interface ApiService {
+
+    /**
+     * Checks the user's login details against the backend.
+     *
+     * @param body  The identifier and password the user typed
+     * @return      The signed-in user's info, or throws an HttpException 401 if the details are wrong
+     */
     @POST("login")
     suspend fun login(@Body body: LoginRequest): LoginResponse
 }

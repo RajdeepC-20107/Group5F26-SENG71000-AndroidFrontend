@@ -22,16 +22,7 @@ import androidx.core.content.ContextCompat
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Android 17+ blocks the local network unless the user allows it.
-        // Needed so the app can reach the dev backend at 10.0.2.2.
-        if (Build.VERSION.SDK_INT >= 37 &&
-            ContextCompat.checkSelfPermission(this, "android.permission.ACCESS_LOCAL_NETWORK")
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf("android.permission.ACCESS_LOCAL_NETWORK"), 1
-            )
-        }
+        getLocalNetworkPermission(this)
         setContent {
             MaterialTheme {
                 AppNavController()
@@ -109,5 +100,22 @@ private fun AppNavController() {
                 )
             )
         }
+    }
+}
+
+/**
+ * Android 17+ blocks the local network unless the user allows it.
+ * Needed so the app can reach the dev backend.
+ *
+ * @param mainActivity  The main activity component running the app.
+ */
+private fun getLocalNetworkPermission(mainActivity: MainActivity) {
+    if (Build.VERSION.SDK_INT >= 37 &&
+        ContextCompat.checkSelfPermission(mainActivity, "android.permission.ACCESS_LOCAL_NETWORK")
+        != PackageManager.PERMISSION_GRANTED
+    ) {
+        ActivityCompat.requestPermissions(
+            mainActivity, arrayOf("android.permission.ACCESS_LOCAL_NETWORK"), 1
+        )
     }
 }
