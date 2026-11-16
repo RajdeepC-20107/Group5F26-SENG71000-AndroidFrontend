@@ -15,10 +15,15 @@ import com.example.driverkarma.data.ScoreFactor
 import com.example.driverkarma.ui.home.HomeScreen
 import com.example.driverkarma.ui.login.LoginScreen
 import com.example.driverkarma.ui.score.ScoreScreen
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        getLocalNetworkPermission(this)
         setContent {
             MaterialTheme {
                 AppNavController()
@@ -96,5 +101,25 @@ private fun AppNavController() {
                 )
             )
         }
+    }
+}
+
+/**
+ * Android 17+ blocks the local network unless the user allows it.
+ * Needed so the app can reach the dev backend.
+ *
+ * @param mainActivity  The main activity component running the app.
+ *
+ * @author  Farah Lariani
+ * @author  Rajdeep Chowdhury
+ */
+private fun getLocalNetworkPermission(mainActivity: MainActivity) {
+    if (Build.VERSION.SDK_INT >= 37 &&
+        ContextCompat.checkSelfPermission(mainActivity, "android.permission.ACCESS_LOCAL_NETWORK")
+        != PackageManager.PERMISSION_GRANTED
+    ) {
+        ActivityCompat.requestPermissions(
+            mainActivity, arrayOf("android.permission.ACCESS_LOCAL_NETWORK"), 1
+        )
     }
 }
